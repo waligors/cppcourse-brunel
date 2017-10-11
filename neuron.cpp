@@ -3,54 +3,52 @@
 #include <cmath>
 
 Neuron::Neuron ()
-:	pot_(v_reset)
+:	pot_(v_reset),
+	clock_(0),
+	refractory_(false)
 {
 	spikes_.clear();
 }
 
-void Neuron::update(double time, double dt, double extCurrent)
+bool Neuron::update(double dt, double extCurrent, double j)
 {
 	//if the threshold is reached
 	if(pot_ >= thresh)
 	{	
-		//store the actual time to the spikes vector and reset the potential
-		spikes_.push_back(time);
-		pot_= v_reset;	
+		//store the actual time to the spikes vector, reset the potential
+		//set refractory to true and return true value bc the neuron is actually spiking
+		spikes_.push_back(clock_);
+		refractory_=true;
+		pot_= v_reset;
+		clock_++;
+		return true;
 	}	
 	
-	//if at least one spike occured
-	if(!spikes_.empty())
-	{	
-		//if we are not in the refractory period
-		if(spikes_.back() + time_rest <= time )
+	if(refractory_)
+	{
+		if(spikes_.back() + time_rest <= clock_)
 		{
-			//compute the formula
-			formula(dt, extCurrent);
-			cout << pot_*1000 <<" mV at time " << time*1000 << " ms." << endl;	
-		}
-		else
-		{
-			cout << "refractory time!" << endl;
+			refractory_=false;
 		}
 	}
-	
-	//no spike occured (yet)
 	else
 	{
-		//compute the fromula
-		formula(dt, extCurrent);
-		cout << pot_*1000 <<" mV at time " << time*1000 << " ms." << endl;
+		//compute the formula
+		formula(dt, extCurrent, j);
 	}
+	
+	clock_++;
+	return false;
 }
 
-void Neuron::formula(double dt, double extCurrent)
+void Neuron::formula(double dt, double extCurrent, double j)
 {
 	double const1(exp(-(dt/tau)));
-	double const2((tau/cond)*(1-const1));
-	pot_= (const1*pot_) + (extCurrent*const2);
+	double const2((tau/cap)*(1-const1));
+	pot_= (const1*pot_) + (extCurrent*const2) + j;
 }
 
-vector <double> Neuron::getSpikes() const
+vector <unsigned int> Neuron::getSpikes() const
 {
 	return spikes_;
 }
@@ -60,7 +58,7 @@ size_t Neuron::getNumSpikes() const
 	return spikes_.size();
 }
 
-double Neuron::getSpikeTime(size_t tab) const
+unsigned int Neuron::getSpikeTime(size_t tab) const
 {
 	return spikes_[tab];
 }
@@ -70,4 +68,13 @@ double Neuron::getPot() const
 	return pot_;
 }
 
+double Neuron::stepToTimeMs(double c)
+{
+	return c/10;
+}
+
+unsigned int Neuron::getClock() const
+{
+	return clock_;
+}
 

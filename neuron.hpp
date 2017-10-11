@@ -13,21 +13,30 @@ class Neuron
 		Neuron ();
 		
 		//update method
-		void update(double time, double dt, double extCurrent);
+		bool update(double dt, double extCurrent, double j);
 		//the formula
-		void formula(double dt, double extCurrent);
+		void formula(double dt, double extCurrent, double j);
 		
 		//getters
-		vector <double> getSpikes() const;
+		vector <unsigned int> getSpikes() const;
 		size_t getNumSpikes() const;
-		double getSpikeTime(size_t tab) const;
+		unsigned int getSpikeTime(size_t tab) const;
 		double getPot() const;
+		double stepToTimeMs(double c);
+		unsigned int getClock() const;
+
+
 	
 	private :
 		//neuron potential (V)
 		double pot_;
 		//each time at which a spike occurs is stored 
-		vector <double> spikes_;		
+		vector <unsigned int> spikes_;	
+		
+		//Buffer buffer_;	
+		unsigned int clock_;
+		
+		bool refractory_;
 };
 
 #endif
