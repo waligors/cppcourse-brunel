@@ -4,43 +4,50 @@
 
 using namespace std;
 
-Network::Network ()
+Network::Network (unsigned int n_neurons)
 {
-	for(size_t i = 0; i < n_neurons;i++)
+	for(size_t i = 0; i < n_neurons ;i++)
 	{
-		neurons_.push_back(Neuron());
+		neurons_.push_back(Neuron(i));
 	}
+	//Manually setting connections (for now)
+	neurons_[0].addConnection(1);
+	
+	//Manually setting neurons that get the I external (for now)
+	neurons_Iext_.push_back(0);
 }
 
 void Network::update(double dt, double extCurrent)
 {
-	//assuming we only have 2 neurons and the current only goes to neuron '0'
-	if(neurons_[0].update(dt,extCurrent,0.0))
+	//Browsing Iext neurons
+	for(auto i : neurons_Iext_)
 	{
-		if(neurons_[1].update(dt,0.0,j_const))
+		if(neurons_[i].update(dt,extCurrent,0.0))
 		{
-			cout << "AAAAAAAAAAAAAA" << endl;
-			//cout << "Neuron 2 spiking at step :" << neurons_[1].getClock() << endl;
+			cout << "Neuron " << i << " spiking at time : " << neurons_[i].getClock()-1 << endl;
+			for(auto con : neurons_[i].getConnections())
+			{
+				neurons_[con].getBuffer()->set(neurons_[i].getClock()-1,j_const);
+			}
 		}
-		else
-		{
-			//cout <<"Neuron 1 spiked but not Neuron 2" << endl << "Neuron 2 pot : " << neurons_[1].getPot() << endl ;
-		}
-	}
-	else
-	{
-		neurons_[1].update(dt,0.0,0.0);
-		//cout << "Neuron 1 didnt spike .." << endl << "Neuron 2 pot : " << neurons_[1].getPot() << endl;
 	}
 	
-	//neurons_[0].update(dt,extCurrent,0.0);
-	//cout << "Neuron 1 pot : " << neurons_[0].getPot() << endl;
-	for(auto s : neurons_[0].getSpikes())
+	//Browsing not Iext_neurons
+	for(size_t i = 0; i < neurons_.size(); i++)
 	{
-		cout << "Neuron 1 spike time : " << s << endl;
+		bool is_Iext_neuron = false;
+		for(auto j : neurons_Iext_)
+		{
+			if(i==j) { is_Iext_neuron = true; }
+		}
+		if(!is_Iext_neuron)
+		{
+			//cout << "Current stored in buffer at time "<< neurons_[i].getClock() << " : " << neurons_[i].getBuffer()->get(neurons_[i].getClock()) << endl;
+			if(neurons_[i].update(dt,0.0,neurons_[i].getBuffer()->get(neurons_[i].getClock()+1)))
+			{
+				cout << "Neuron " << i << " spiking at time : " << neurons_[i].getClock()-1 << endl;
+			}
+		}
 	}
-	for(auto s : neurons_[1].getSpikes())
-	{
-		cout << "Neuron 2 spike time : " << s << endl;
-	}
+		
 }

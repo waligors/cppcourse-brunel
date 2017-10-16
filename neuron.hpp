@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "constant.hpp"
+#include "buffer.hpp"
 
 using namespace std;
 
@@ -11,6 +12,8 @@ class Neuron
 	public :
 		//constructor
 		Neuron ();
+		Neuron (unsigned int i,vector <unsigned int> connections);
+		Neuron (unsigned int i);
 		
 		//update method
 		bool update(double dt, double extCurrent, double j);
@@ -24,19 +27,24 @@ class Neuron
 		double getPot() const;
 		double stepToTimeMs(double c);
 		unsigned int getClock() const;
-
-
-	
+		Buffer* getBuffer();
+		void addConnection(unsigned int con);
+		vector <unsigned int> getConnections() const;
+		
 	private :
 		//neuron potential (V)
 		double pot_;
 		//each time at which a spike occurs is stored 
 		vector <unsigned int> spikes_;	
 		
-		//Buffer buffer_;	
+		Buffer buffer_;	
 		unsigned int clock_;
 		
 		bool refractory_;
+		
+		vector <unsigned int> connections_;
+		
+		unsigned int neuron_num_;
 };
 
 #endif

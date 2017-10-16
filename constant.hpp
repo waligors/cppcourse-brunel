@@ -10,9 +10,9 @@ static const double thresh (200.0); //threshold, if the neuron potential gets to
 static const double dt (1); //smallest time interval with which we computing the time (10^-4 sec)
 static const double time_stop (500.0); //arbitrary time at which the program stops (10^-4 sec)
 static const double j_const (200.0); //(10^-4 V) 0.02mV
-static const unsigned int n_neurons (2); //
-static const unsigned int buffer_size (8); //
+//static const unsigned int n_neurons (2); //
 static const unsigned int delay (5); //
+static const unsigned int buffer_size (delay+1); //
 
 #endif
 
@@ -30,8 +30,8 @@ static const unsigned int delay (5); //
 /*TO DO
  * constant in units of 1 DONE
  * abs(a-b) < 10e-6
- * maybe change main functions
- * 
- * 
+ * set function in main
+ * user-proof the cin in main
+ * use argv
  * 
  */

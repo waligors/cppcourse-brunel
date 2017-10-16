@@ -11,7 +11,7 @@ using namespace std;
 //the values are then adapted in ms, mV, mA form for the user
 int main (int argc, char* argv[])
 {
-	Network network_;
+	Network network(2);
 	unsigned int time (0), time_a(0), time_b(0);
 	double current(0.0);
 	do
@@ -42,19 +42,18 @@ int main (int argc, char* argv[])
 	{
 		if(time<time_a || time>time_b)
 		{
-			//updating the neuron with current = 0mA
-			network_.update(dt,0.0);				
+			//updating the network with external current = 0mA
+			network.update(dt,0.0);				
 		}
 		else
 		{
-			//updating the neuron with the current from the user
-			network_.update(dt,current);						
+			//updating the network with the current from the user
+			network.update(dt,current);						
 		}
 		//computing time
-		//cout << "step :" << time << endl;
-		time++;
+		time+=dt;
 	}
 	
-	return 0;
+	return EXIT_SUCCESS;
 }
 

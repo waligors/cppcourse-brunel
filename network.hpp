@@ -11,14 +11,15 @@ class Network
 {
 	public :
 		//constructor
-		Network ();
+		Network (unsigned int n_neurons);
 		
 		//update method
 		void update(double dt, double extCurrent);
 	
 	private :
 		//each neuron of our simulation
-		vector <Neuron> neurons_;		
+		vector <Neuron> neurons_;
+		vector <unsigned int> neurons_Iext_;		
 };
 
 #endif

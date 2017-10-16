@@ -8,6 +8,28 @@ Neuron::Neuron ()
 	refractory_(false)
 {
 	spikes_.clear();
+	connections_.clear();
+}
+
+Neuron::Neuron (unsigned int i,vector <unsigned int> connections)
+:	pot_(v_reset),
+	clock_(0),
+	refractory_(false),
+	neuron_num_(i),
+	connections_(connections)
+{
+	spikes_.clear();
+	connections_.clear();
+}
+
+Neuron::Neuron (unsigned int i)
+:	pot_(v_reset),
+	clock_(0),
+	refractory_(false),
+	neuron_num_(i)
+{
+	spikes_.clear();
+	connections_.clear();
 }
 
 bool Neuron::update(double dt, double extCurrent, double j)
@@ -78,3 +100,22 @@ unsigned int Neuron::getClock() const
 	return clock_;
 }
 
+Buffer* Neuron::getBuffer()
+{
+	return &buffer_;
+}
+
+void Neuron::addConnection(unsigned int con)
+{
+	bool a=false;
+	for(auto c : connections_)
+	{
+		if(con==c) { a=true; }
+	}
+	if(!a) { connections_.push_back(con); }
+}
+
+vector <unsigned int> Neuron::getConnections() const
+{
+	return connections_;
+}
