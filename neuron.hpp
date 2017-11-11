@@ -3,48 +3,51 @@
 
 #include <vector>
 #include "constant.hpp"
-#include "buffer.hpp"
-
-using namespace std;
 
 class Neuron
 {
 	public :
 		//constructor
 		Neuron ();
-		Neuron (unsigned int i,vector <unsigned int> connections);
-		Neuron (unsigned int i);
+		Neuron (bool excitatory);
+		Neuron (bool excitatory, std::vector <unsigned int> connections);
 		
 		//update method
-		bool update(double dt, double extCurrent, double j);
+		bool update(double extCurrent, double lambda = 0.0);
 		//the formula
-		void formula(double dt, double extCurrent, double j);
+		void updatePotential(double extCurrent, double lambda);
 		
 		//getters
-		vector <unsigned int> getSpikes() const;
+		std::vector <unsigned int> getSpikes() const;
 		size_t getNumSpikes() const;
 		unsigned int getSpikeTime(size_t tab) const;
-		double getPot() const;
-		double stepToTimeMs(double c);
+		double getPotential() const;
+		static double stepToTime(unsigned int steps);
 		unsigned int getClock() const;
-		Buffer* getBuffer();
+		
 		void addConnection(unsigned int con);
-		vector <unsigned int> getConnections() const;
+		std::vector <unsigned int> getConnections() const;
+		bool isExcitatory() const;
+		void printSpikes() const;
+		double poissonDistribution(double lambda) const;
+		
+		void setBuffer(size_t t, bool excitatory);
+		double getAndEraseBuffer (size_t t);
+		double getBuffer (size_t t) const;
+		void printBuffer () const;
+		static unsigned int timeToStep(double time);
+		void setPotential(double pot);
+		bool didSpike() const;
 		
 	private :
 		//neuron potential (V)
 		double pot_;
-		//each time at which a spike occurs is stored 
-		vector <unsigned int> spikes_;	
-		
-		Buffer buffer_;	
 		unsigned int clock_;
-		
-		bool refractory_;
-		
-		vector <unsigned int> connections_;
-		
-		unsigned int neuron_num_;
+		bool refractory_;		
+		bool isExcitatory_;
+		std::vector <unsigned int> spikes_;	
+		std::vector <unsigned int> connections_;
+		std::vector <double> buffer_;
 };
 
 #endif
